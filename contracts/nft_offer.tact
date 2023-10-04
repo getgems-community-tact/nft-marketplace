@@ -1,5 +1,3 @@
-import "@stdlib/deploy";
-
 struct Royalty {
     marketplaceFeeAddress: Address;
     marketplaceNumerator: Int as uint32; // TEP-66 says numerator and denominator are contained in uint16, but reference contract uses uint32
@@ -25,6 +23,7 @@ struct OfferParameters {
     royaltyAddress: Address;
     royaltyNumerator: Int as uint32;
     royaltyDenominator: Int as uint32;
+    profitPrice: Int as coins;
 }
 
 message(555) Fix {
@@ -191,6 +190,7 @@ contract NftOffer {
         return mulDiv(a, numerator, denominator); // muldiv(muldiv(a, numerator, 1000000000), 1000000000, denominator) = muldiv(a, numerator, denominator)
     }
     get fun get_offer_data(): OfferParameters {
+        let profitPrice: Int = self.fullPrice - self.getPercent(self.fullPrice, self.fees.royaltyNumerator, self.fees.royaltyDenominator) - self.getPercent(self.fullPrice, self.fees.marketplaceNumerator, self.fees.marketplaceDenominator);
         return OfferParameters{
             isComplete: self.isComplete,
             createdAt: self.createdAt,
@@ -204,7 +204,8 @@ contract NftOffer {
             marketplaceDenominator: self.fees.marketplaceDenominator,
             royaltyAddress: self.fees.royaltyAddress,
             royaltyNumerator: self.fees.royaltyNumerator,
-            royaltyDenominator: self.fees.royaltyDenominator
+            royaltyDenominator: self.fees.royaltyDenominator,
+            profitPrice: profitPrice
         };
     }
 }
