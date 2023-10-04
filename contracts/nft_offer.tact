@@ -53,7 +53,7 @@ message(0x05138d91) NftOwnershipAssigned {
 native mulDiv(a: Int, b: Int, c: Int): Int;
 
 contract NftOffer {
-    const creationGas: Int = ton("0.02");
+    const creationGas: Int = ton("0.1");
     const addValueGas: Int = ton("0.02");
     const nftTransferGas: Int = ton("1");
     const forwardAmount: Int = ton("0.001");
@@ -68,14 +68,13 @@ contract NftOffer {
     fees: Royalty;
     // can_deploy seems to be useless here
 
-    init(finishAt: Int, marketplaceAddress: Address, nftAddress: Address, offerOwnerAddress: Address, fullPrice: Int, marketplaceFeeAddress: Address, marketplaceNumerator: Int, marketplaceDenominator: Int, royaltyAddress: Address, royaltyNumerator: Int, royaltyDenominator: Int) {
-        require(myBalance() >= fullPrice + self.creationGas, "Invalid value");
+    init(finishAt: Int, marketplaceAddress: Address, nftAddress: Address, offerOwnerAddress: Address, marketplaceFeeAddress: Address, marketplaceNumerator: Int, marketplaceDenominator: Int, royaltyAddress: Address, royaltyNumerator: Int, royaltyDenominator: Int) {
         self.createdAt = now();
         self.finishAt = finishAt;
         self.marketplaceAddress = marketplaceAddress;
         self.nftAddress = nftAddress;
         self.offerOwnerAddress = offerOwnerAddress;
-        self.fullPrice = fullPrice;
+        self.fullPrice = myBalance();
         self.fees = Royalty {
             marketplaceFeeAddress: marketplaceFeeAddress,
             marketplaceNumerator: marketplaceNumerator,
